@@ -3,7 +3,7 @@ library("futile.matrix")
 library("ggplot2")
 
 ### PART A : SVD
-m <- read.table('reshape_one.txt', sep =",", header = FALSE)
+m <- read.table('out/reshape.txt', sep =",", header = FALSE)
 m.rev <- sparseMatrix(i=m[,1], j=m[,2], x=m[,3])
 s <- irlba(m.rev, nv = 50) 
 
