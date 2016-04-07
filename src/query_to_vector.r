@@ -21,4 +21,4 @@ temp <- as.matrix(inspect(tdm))
 s_clean_query <- cbind(rownames(temp),rowSums(temp))
 rownames(s_clean_query) <- rownames(1:nrow(s_clean_query))
 s_clean_query
-# http://rstudio-pubs-static.s3.amazonaws.com/12422_b2b48bb2da7942acaca5ace45bd8c60c.html
+

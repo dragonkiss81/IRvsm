@@ -33,6 +33,34 @@ http://www.bytemining.com/2010/05/hitting-the-big-data-ceiling-in-r/
 用R進行中文 text Mining
 http://rstudio-pubs-static.s3.amazonaws.com/12422_b2b48bb2da7942acaca5ace45bd8c60c.html
 
-removePunctuation = TRUE,
-	removeNumbers = TRUE, 
-	stopwords=FALSE)
+
+
+
+
+### XML
+
+# http://rstudio-pubs-static.s3.amazonaws.com/12422_b2b48bb2da7942acaca5ace45bd8c60c.html
+
+R and the web (for beginners), Part II: XML in R
+# http://www.r-bloggers.com/r-and-the-web-for-beginners-part-ii-xml-in-r/
+
+Basic Text Mining in R
+# https://rstudio-pubs-static.s3.amazonaws.com/31867_8236987cf0a8444e962ccd2aec46d9c3.html
+
+qdap-tm Package Compatibility
+# https://cran.r-project.org/web/packages/qdap/vignettes/tm_package_compatibility.pdf
+
+中文文本挖掘包tm、tmcn、Rwordseg、Rweibo的安装
+# http://blog.csdn.net/andy_henry/article/details/25929019
+
+R 爬虫
+# http://mylearnho.blogspot.tw/2015/09/r.html
+
+
+指令TermDocumentMatrix處理中文發生問題(已解決)
+# http://mylearnho.blogspot.tw/2015/09/termdocumentmatrix.html
+
+# java installation
+sudo apt-get install default-jre
+sudo apt-get install default-jdk
+https://www.digitalocean.com/community/tutorials/how-to-install-java-on-ubuntu-with-apt-get
