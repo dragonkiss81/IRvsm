@@ -11,18 +11,22 @@ int main() {
     if(!fin.good()) return 1;
 
     int vocab_count = 1;
+    int vocab_id_1, vocab_id_2, num_contain;
+    int file_id, file_count;
     while (!fin.eof()){
-        int vocab_id_1, vocab_id_2, num_contain;
         fin>>vocab_id_1>>vocab_id_2>>num_contain;
-        fout2<<vocab_id_1<<" "<<vocab_id_2<<endl;
+	    if( 5396<=vocab_id_1 && vocab_id_1<= 12277 && num_contain > 1000){
+	        fout2<<vocab_id_1<<" "<<vocab_id_2<<endl;
 
-        int file_id, file_count;
-        for(int i=0; i<num_contain; i++){
-            fin>>file_id>>file_count;
-            fout<<vocab_count<<","<<file_id<<","<<file_count<<endl;
+            for(int i=0; i<num_contain; i++){
+                fin>>file_id>>file_count;
+                fout<<vocab_count<<","<<file_id+1<<","<<file_count<<endl;
+            }
+            vocab_count++;
         }
-
-        vocab_count++;
+        else{
+            for(int i=0; i<num_contain; i++){ fin>>file_id>>file_count; } //skip
+        }
     }
 
     return 0;
