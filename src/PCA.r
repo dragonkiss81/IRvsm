@@ -3,9 +3,10 @@ library("futile.matrix")
 library("ggplot2")
 
 ### PART A : SVD
-m <- read.table('out/reshape.txt', sep =",", header = FALSE)
+m <- read.table('out/rev.txt', sep =",", header = FALSE)
 m.rev <- sparseMatrix(i=m[,1], j=m[,2], x=m[,3])
-s <- irlba(m.rev, nv = 10) 
+m.rev <- m.rev[-stopw.index,] # stopword
+s <- irlba(m.rev, nv = 5) 
 
 ### PART B : QUERY to new space
 sample.query <- num.long.q  # m.rev[,1]
@@ -29,7 +30,7 @@ tail(cos_list[rank])
 rank[1:1000]
 
 file.list <- read.table("test/file-list", header = FALSE)
-rank.answer <- tolower(substr(file.list[rank[1:10000],1], 17,31))
+rank.answer <- tolower(substr(file.list[rank[1:100],1], 17,31))
 
 ans.train <- read.table("test/ans-train")
 ans.train.1 <- ans.train[which(ans.train$V1==1),2]
