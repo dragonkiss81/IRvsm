@@ -33,6 +33,8 @@ all_ranking_list <- data.frame()
 for(NUM_OF_QUERY in 1:nrow(plantcat_df)){
 
 ### Query extraction
+
+  
 d.corpus <- Corpus(VectorSource(plantcat_df[NUM_OF_QUERY,c(5)]))
 d.corpus <- tm_map(d.corpus, removePunctuation)
 d.corpus <- tm_map(d.corpus, removeNumbers)
@@ -64,7 +66,7 @@ for(i in 1:length(loc)){
 
 ### Ranking : BM25
 query.temp <- as.numeric(s_query_fin[,2])
-k3 <- 1.2
+k3 <- 2
 query.rev <- ((k3+1)*query.temp) / (k3+query.temp)
 # query.rev <- query.temp
 
