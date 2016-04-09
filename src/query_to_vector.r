@@ -41,7 +41,7 @@ all_ranking_list <- data.frame()
 for(NUM_OF_QUERY in 1:nrow(plantcat_df)){
 
 ### tw query extraction
-d.corpus <- Corpus(VectorSource(plantcat_df[NUM_OF_QUERY,c(2,3,5)]))
+d.corpus <- Corpus(VectorSource(plantcat_df[NUM_OF_QUERY,c(5)]))
 d.corpus <- tm_map(d.corpus, removePunctuation)
 d.corpus <- tm_map(d.corpus, removeNumbers)
 tdm <- TermDocumentMatrixCN(d.corpus,control = list(wordLengths = c(1, 2)))
@@ -65,7 +65,7 @@ show
 ### SVD : QUERY to new space
 # sample.query <- num.long.q  # m.rev[,1]
 # query.rev <- solve(diag(s$d)) %*% t(s$u) %*% as.matrix(sample.query)
-query.rev <- num.long.q
+query.rev <- show[,2]
 
 # ### PLOT
 # plot(s$v[,1],s$v[,2], col = "blue")
@@ -75,13 +75,14 @@ query.rev <- num.long.q
 ### Ranking : Cos simularity
 cosine_sim <- function(x,y) x %*% y # / sqrt(x%*%x * y%*%y)
 # doc.vec <- t(s$v)
-doc.vec <- m.rev
-cos_list <- vector(length=0, mode='double')
-print(c("bottleneck start", NUM_OF_QUERY))
-for(i in 1:(length(long.q)/32)){ # parallel idea
-  cos_list <- c(cos_list,apply(doc.vec[,(32*(i-1)+1):(32*i)],2,cosine_sim,y = as.vector(query.rev)))
-  # cos_list[i] <- cosine_sim(as.vector(query.rev) ,doc.vec[,i])
-}
+doc.vec <- m.rev[which(num.long.q!=0),]
+# cos_list <- vector(length=0, mode='double')
+# print(c("bottleneck start", NUM_OF_QUERY))
+# for(i in 1:(length(doc.vec[1,]))){ # parallel idea
+  # cos_list <- c(cos_list,apply(doc.vec[,(32*(i-1)+1):(32*i)],2,cosine_sim,y = as.vector(query.rev)))
+  # cos_list[i] <- cosine_sim(as.vector(query.rev) ,as.vector(doc.vec[,i]))
+# }
+cos_list <- apply(doc.vec[,],2,cosine_sim,y = as.numeric(query.rev))
 rank <- order(cos_list, decreasing = TRUE)
 print(c("bottleneck end", NUM_OF_QUERY))
 
@@ -101,8 +102,8 @@ write.table(all_ranking_list, file="out/ranking_list.txt", sep = " ",
 
 
 ### Compare to REAL answer
-ans.train <- read.table("test/ans-train")
-ans.train.1 <- ans.train[which(ans.train$V1==NUM_OF_ANS),2]
-sum(rank.answer %in% ans.train.1)
+# ans.train <- read.table("test/ans-train")
+# ans.train.1 <- ans.train[which(ans.train$V1==NUM_OF_ANS),2]
+# sum(rank.answer %in% ans.train.1)
 
 

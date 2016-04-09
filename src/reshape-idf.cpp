@@ -22,7 +22,7 @@ int main() {
         fin>>vocab_id_1>>vocab_id_2>>num_contain;
         //idf_check = double(log2( (FILE_LIST_NUM - num_contain + 0.5) / (num_contain + 0.5)));
         //cout<<idf_check<<endl;
-	    if( 5396<=vocab_id_1 && vocab_id_1<= 12277 && num_contain > 80){
+	    if( 5396<=vocab_id_1 && vocab_id_1<= 12277){
             fout_wvec<<vocab_id_1<<" "<<vocab_id_2<<endl;
             df_list.push_back(num_contain);
 
