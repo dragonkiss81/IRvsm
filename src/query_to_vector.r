@@ -34,14 +34,14 @@ long.q <- long.q[-stopw.index]
 ### TRAIN MODEL SVD
 m.rev <- sparseMatrix(i=m[,1], j=m[,2], x=m[,3])
 m.rev <- m.rev[-stopw.index,] # stopword
-# s <- irlba(m.rev, nv = 40) 
+# s <- irlba(m.rev, nv = 100) 
 
 all_ranking_list <- data.frame() 
 
 for(NUM_OF_QUERY in 1:nrow(plantcat_df)){
 
 ### tw query extraction
-d.corpus <- Corpus(VectorSource(plantcat_df[NUM_OF_QUERY,c(2,5)]))
+d.corpus <- Corpus(VectorSource(plantcat_df[NUM_OF_QUERY,c(5)]))
 d.corpus <- tm_map(d.corpus, removePunctuation)
 d.corpus <- tm_map(d.corpus, removeNumbers)
 tdm <- TermDocumentMatrixCN(d.corpus,control = list(wordLengths = c(1, 2)))
@@ -63,7 +63,7 @@ show <- cbind(long.q[which(num.long.q!=0)],num.long.q[which(num.long.q!=0)])
 show
 
 ### SVD : QUERY to new space
-# sample.query <- num.long.q  # m.rev[,1]
+sample.query <- num.long.q  # m.rev[,1]
 # query.rev <- solve(diag(s$d)) %*% t(s$u) %*% as.matrix(sample.query)
 query.rev <- num.long.q
 
@@ -73,14 +73,14 @@ query.rev <- num.long.q
 
 
 ### Ranking : Cos simularity
-cosine_sim <- function(x,y) x %*% y #/ sqrt(x%*%x * y%*%y)
+cosine_sim <- function(x,y) x %*% y / sqrt(x%*%x * y%*%y)
 # doc.vec <- t(s$v)
 doc.vec <- m.rev
-cos_list <- vector(length=length(long.q), mode='double')
-cos_list <- apply(doc.vec,2,cosine_sim,y = as.vector(query.rev))
-# for(i in 1:ncol(doc.vec)){
-#   cos_list[i] <- cosine_sim(as.vector(query.rev) ,doc.vec[,i])
-# }
+cos_list <- vector(length=0, mode='double')
+for(i in 1:(length(long.q)/50)){ # parallel idea
+  cos_list <- c(cos_list,apply(doc.vec[,(50*(i-1)+1):(50*i)],2,cosine_sim,y = as.vector(query.rev)))
+  # cos_list[i] <- cosine_sim(as.vector(query.rev) ,doc.vec[,i])
+}
 rank <- order(cos_list, decreasing = TRUE)
 
 

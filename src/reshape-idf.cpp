@@ -20,7 +20,7 @@ int main() {
 
     while (!fin.eof()){
         fin>>vocab_id_1>>vocab_id_2>>num_contain;
-	    if( 5396<=vocab_id_1 && vocab_id_1<= 12277 && num_contain > 1000){
+	    if( 5396<=vocab_id_1 && vocab_id_1<= 12277){
             fout_wvec<<vocab_id_1<<" "<<vocab_id_2<<endl;
             df_list.push_back(num_contain);
 
