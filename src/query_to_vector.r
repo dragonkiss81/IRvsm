@@ -41,7 +41,7 @@ all_ranking_list <- data.frame()
 for(NUM_OF_QUERY in 1:nrow(plantcat_df)){
 
 ### tw query extraction
-d.corpus <- Corpus(VectorSource(plantcat_df[NUM_OF_QUERY,c(5)]))
+d.corpus <- Corpus(VectorSource(plantcat_df[NUM_OF_QUERY,c(2,3,5)]))
 d.corpus <- tm_map(d.corpus, removePunctuation)
 d.corpus <- tm_map(d.corpus, removeNumbers)
 tdm <- TermDocumentMatrixCN(d.corpus,control = list(wordLengths = c(1, 2)))
@@ -73,16 +73,17 @@ query.rev <- num.long.q
 
 
 ### Ranking : Cos simularity
-cosine_sim <- function(x,y) x %*% y / sqrt(x%*%x * y%*%y)
+cosine_sim <- function(x,y) x %*% y # / sqrt(x%*%x * y%*%y)
 # doc.vec <- t(s$v)
 doc.vec <- m.rev
 cos_list <- vector(length=0, mode='double')
-for(i in 1:(length(long.q)/50)){ # parallel idea
-  cos_list <- c(cos_list,apply(doc.vec[,(50*(i-1)+1):(50*i)],2,cosine_sim,y = as.vector(query.rev)))
+print(c("bottleneck start", NUM_OF_QUERY))
+for(i in 1:(length(long.q)/32)){ # parallel idea
+  cos_list <- c(cos_list,apply(doc.vec[,(32*(i-1)+1):(32*i)],2,cosine_sim,y = as.vector(query.rev)))
   # cos_list[i] <- cosine_sim(as.vector(query.rev) ,doc.vec[,i])
 }
 rank <- order(cos_list, decreasing = TRUE)
-
+print(c("bottleneck end", NUM_OF_QUERY))
 
 ### Output Ranking Ans
 file.list <- read.table("test/file-list", header = FALSE)

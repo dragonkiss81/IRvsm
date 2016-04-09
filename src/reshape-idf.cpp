@@ -17,10 +17,12 @@ int main() {
     vector<int> df_list;
     int ws_list[FILE_LIST_NUM] = {0};
     int vocab_count = 1;
-
+    double idf_check;
     while (!fin.eof()){
         fin>>vocab_id_1>>vocab_id_2>>num_contain;
-	    if( 5396<=vocab_id_1 && vocab_id_1<= 12277){
+        //idf_check = double(log2( (FILE_LIST_NUM - num_contain + 0.5) / (num_contain + 0.5)));
+        //cout<<idf_check<<endl;
+	    if( 5396<=vocab_id_1 && vocab_id_1<= 12277 && num_contain > 80){
             fout_wvec<<vocab_id_1<<" "<<vocab_id_2<<endl;
             df_list.push_back(num_contain);
 
@@ -57,7 +59,7 @@ int main() {
         fin_spar>>row>>col>>value;
         // cout<<value/ws_list[col-1]<<" "<<double(log2(FILE_LIST_NUM/df_list[row-1])+1)<<endl;
         tf = double(value/ws_list[col-1]);
-        idf = double(log2( (FILE_LIST_NUM - df_list[row-1] + 0.5) / (df_list[row-1]) + 0.5));
+        idf = double(log2( (FILE_LIST_NUM - df_list[row-1] + 0.5) / (df_list[row-1] + 0.5)));
         rev_value =  tf * idf;
         fout_rev<<row<<","<<col<<","<<rev_value<<endl;
     }
