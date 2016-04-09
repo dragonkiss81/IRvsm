@@ -33,7 +33,7 @@ all_ranking_list <- data.frame()
 for(NUM_OF_QUERY in 1:nrow(plantcat_df)){
 
 ### Query extraction
-d.corpus <- Corpus(VectorSource(plantcat_df[NUM_OF_QUERY,c(2,3,5)]))
+d.corpus <- Corpus(VectorSource(plantcat_df[NUM_OF_QUERY,c(5)]))
 d.corpus <- tm_map(d.corpus, removePunctuation)
 d.corpus <- tm_map(d.corpus, removeNumbers)
 tdm <- TermDocumentMatrixCN(d.corpus,control = list(wordLengths = c(1, 2)))
@@ -42,8 +42,15 @@ temp <- as.matrix(inspect(tdm))
 ### Clean Query
 s_clean_query <- cbind(rownames(temp),rowSums(temp))
 rownames(s_clean_query) <- rownames(1:nrow(s_clean_query))
-s_query_stop <- s_clean_query[-which(s_clean_query[,1] %in% stop.word),]
-s_query_fin <- s_query_stop[which(s_query_stop[,1] %in% long.q),]
+if( length(which(s_clean_query[,1] %in% stop.word)) == 0 ){
+  s_query_fin <- s_clean_query[which(s_clean_query[,1] %in% long.q),]
+  print(s_query_fin)
+}
+else{
+  s_query_stop <- s_clean_query[-which(s_clean_query[,1] %in% stop.word),]
+  s_query_fin <- s_query_stop[which(s_query_stop[,1] %in% long.q),]
+  print(s_query_fin)
+}
 
 
 ### Find Query Index in All_term (long.q)
@@ -59,6 +66,7 @@ for(i in 1:length(loc)){
 query.temp <- as.numeric(s_query_fin[,2])
 k3 <- 1.2
 query.rev <- ((k3+1)*query.temp) / (k3+query.temp)
+# query.rev <- query.temp
 
 innerproduct <- function(x,y) x %*% y # / sqrt(x%*%x * y%*%y)
 
