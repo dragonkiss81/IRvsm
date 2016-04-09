@@ -4,6 +4,7 @@ library("tmcn")
 library("irlba")
 library("futile.matrix")
 library("ggplot2")
+library("ngram")
 
 ### Read All Require Data
 xmlfile <- xmlTreeParse("test/query-test.xml")
@@ -32,9 +33,28 @@ for(i in 1:nrow(long_vec)){
 all_ranking_list <- data.frame() 
 for(NUM_OF_QUERY in 1:nrow(plantcat_df)){
 
+str <- as.character(plantcat_df[NUM_OF_QUERY,c(2)]) 
+str2 <- as.character(plantcat_df[NUM_OF_QUERY,c(3)]) 
+str3 <- as.character(plantcat_df[NUM_OF_QUERY,c(5)]) 
+insertWords(segmentCN(str))
+insertWords(segmentCN(str2))
+insertWords(segmentCN(str3))
 ### Query extraction
-
-  
+# insertWords(c('白色', '恐怖', '受难', '行政', '国防', '立法', '匪谍',
+#               '罚锾',
+#               '科省', '柯省', '科索', '柯索', '难民', '马其', '其顿', '土耳', '耳其', '阿尔', '巴尼',
+#               '中美',
+#               '两税', '业升', '抵减', '经济', '财政', '经建', '行政',
+#               '护盘', '公积', '资本', '证期', '董监', '央行', '增值', '印花', '证交',
+#               '麦可', '乔丹', '乔登', '代言', '耐吉', '史腾', '博德',
+#               '晓燕', '白案', '掳人', '勒赎', '合议', '进兴', '志辉', '素真',
+#               '儿扶',
+#               '迪士', '士尼',
+#               '策进', '招策', '教育',
+#               '培训', '国小', '教学', '检核',
+#               '美浓',
+#               '栖兰', '桧木', '枯立', '倒木', '退辅', '农委', '森保', '林务',
+#               '黑面', '琵鹭', '曾文', '圣婴', '猩红', '登革', '革热', '肠病'))
 d.corpus <- Corpus(VectorSource(plantcat_df[NUM_OF_QUERY,c(5)]))
 d.corpus <- tm_map(d.corpus, removePunctuation)
 d.corpus <- tm_map(d.corpus, removeNumbers)
@@ -66,9 +86,9 @@ for(i in 1:length(loc)){
 
 ### Ranking : BM25
 query.temp <- as.numeric(s_query_fin[,2])
-k3 <- 2
-query.rev <- ((k3+1)*query.temp) / (k3+query.temp)
-# query.rev <- query.temp
+# k3 <- 2
+# query.rev <- ((k3+1)*query.temp) / (k3+query.temp)
+query.rev <- query.temp
 
 innerproduct <- function(x,y) x %*% y # / sqrt(x%*%x * y%*%y)
 
