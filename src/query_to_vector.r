@@ -41,7 +41,7 @@ all_ranking_list <- data.frame()
 for(NUM_OF_QUERY in 1:nrow(plantcat_df)){
 
 ### tw query extraction
-d.corpus <- Corpus(VectorSource(plantcat_df[NUM_OF_QUERY,c(5)]))
+d.corpus <- Corpus(VectorSource(plantcat_df[NUM_OF_QUERY,c(2,3,4,5)]))
 d.corpus <- tm_map(d.corpus, removePunctuation)
 d.corpus <- tm_map(d.corpus, removeNumbers)
 tdm <- TermDocumentMatrixCN(d.corpus,control = list(wordLengths = c(1, 2)))
@@ -49,7 +49,7 @@ tdm <- TermDocumentMatrixCN(d.corpus,control = list(wordLengths = c(1, 2)))
 temp <- as.matrix(inspect(tdm))
 s_clean_query <- cbind(rownames(temp),rowSums(temp))
 rownames(s_clean_query) <- rownames(1:nrow(s_clean_query))
-s_clean_query
+s_clean_query <- s_clean_query[-which(s_clean_query[,1] %in% stop.word),]
 
 # short vector to long vector
 loc <- which(long.q %in% c(s_clean_query[,1]))
@@ -65,15 +65,16 @@ show
 ### SVD : QUERY to new space
 # sample.query <- num.long.q  # m.rev[,1]
 # query.rev <- solve(diag(s$d)) %*% t(s$u) %*% as.matrix(sample.query)
-query.rev <- show[,2]
-
+query.temp <- as.numeric(show[,2])
+k3 <- 1.2
+query.rev <- ((k3+1)*query.temp) / (k3+query.temp)
 # ### PLOT
 # plot(s$v[,1],s$v[,2], col = "blue")
 # points(t(query.rev), col = "red")
 
 
 ### Ranking : Cos simularity
-cosine_sim <- function(x,y) x %*% y / sqrt(x%*%x * y%*%y)
+cosine_sim <- function(x,y) x %*% y # / sqrt(x%*%x * y%*%y)
 # doc.vec <- t(s$v)
 doc.vec <- m.rev[which(num.long.q!=0),]
 # cos_list <- vector(length=0, mode='double')

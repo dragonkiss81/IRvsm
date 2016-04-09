@@ -50,6 +50,8 @@ int main() {
     int vocab_count = 1;
     vector<int> df_list;
 
+
+
     while (!fin.eof()){
         fin>>vocab_id_1>>vocab_id_2>>num_contain;
 	    if( 5396<=vocab_id_1 && vocab_id_1<= 12277){
@@ -85,6 +87,7 @@ int main() {
     //     cout<<file_list[i]<<" "<<file_size[i]<<endl;
     // }
 
+
     ifstream fin_spar("out/reshape.txt");
     ofstream fout_rev("out/rev.txt");
 
@@ -92,18 +95,16 @@ int main() {
     double tf, idf, value;
     double bm_tf, bm_rsv;
     double rev_value;
-    const int k = 2, b = 0.75;
+    const int k = 1.2, b = 0.75;
 
     while(!fin_spar.eof()){
         fin_spar>>row>>col>>value;
-        idf = double(log2( FILE_LIST_NUM / df_list[row-1]));
-        //idf = double(log2( (FILE_LIST_NUM - df_list[row-1] + 0.5) / (df_list[row-1] + 0.5)));
-
+        // idf = double(log2( FILE_LIST_NUM / df_list[row-1]));
+        idf = double(log2( (FILE_LIST_NUM - df_list[row-1] + 0.5) / (df_list[row-1] + 0.5)));
         double doc_len_ratio = double(file_size[col-1]/avg_doc_len);
-        bm_tf = value / (1 - b + b*doc_len_ratio);
-        bm_rsv = idf * (((k+1) * value) / (k*((1-b)+b*doc_len_ratio) + value));
+        rev_value = idf * (((k+1) * value) / (k*((1-b)+b*doc_len_ratio) + value));
+        //bm_tf = value / (1 - b + b*doc_len_ratio);
 
-        rev_value =  bm_tf * bm_rsv;
         fout_rev<<row<<","<<col<<","<<rev_value<<endl;
     }
 
