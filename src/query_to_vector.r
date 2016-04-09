@@ -73,7 +73,7 @@ query.rev <- show[,2]
 
 
 ### Ranking : Cos simularity
-cosine_sim <- function(x,y) x %*% y # / sqrt(x%*%x * y%*%y)
+cosine_sim <- function(x,y) x %*% y / sqrt(x%*%x * y%*%y)
 # doc.vec <- t(s$v)
 doc.vec <- m.rev[which(num.long.q!=0),]
 # cos_list <- vector(length=0, mode='double')
