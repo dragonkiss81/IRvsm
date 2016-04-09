@@ -50,12 +50,15 @@ int main() {
     ofstream fout_rev("out/rev.txt");
 
     int row, col;
+    double tf, idf;
     double value;
     double rev_value;
     while(!fin_spar.eof()){
         fin_spar>>row>>col>>value;
         // cout<<value/ws_list[col-1]<<" "<<double(log2(FILE_LIST_NUM/df_list[row-1])+1)<<endl;
-        rev_value = double(value/ws_list[col-1]) * double(log2(FILE_LIST_NUM/df_list[row-1])+1);
+        tf = double(value/ws_list[col-1]);
+        idf = double(log2( (FILE_LIST_NUM - df_list[row-1] + 0.5) / (df_list[row-1]) + 0.5));
+        rev_value =  tf * idf;
         fout_rev<<row<<","<<col<<","<<rev_value<<endl;
     }
 

@@ -63,7 +63,7 @@ show <- cbind(long.q[which(num.long.q!=0)],num.long.q[which(num.long.q!=0)])
 show
 
 ### SVD : QUERY to new space
-sample.query <- num.long.q  # m.rev[,1]
+# sample.query <- num.long.q  # m.rev[,1]
 # query.rev <- solve(diag(s$d)) %*% t(s$u) %*% as.matrix(sample.query)
 query.rev <- num.long.q
 
