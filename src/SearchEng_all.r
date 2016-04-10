@@ -165,6 +165,12 @@ TermDocumentMatrixCN<-
     .TermDocumentMatrix(m, weighting)
   }
 
+
+
+
+
+
+
 library("XML")
 library("tm")
 library("tmcn")
@@ -215,6 +221,14 @@ insertWords(c('白色', '恐怖', '受难', '行政', '国防', '立法', '匪�
               '黑面', '琵鹭', '曾文', '圣婴', '猩红', '登革', '革热', '肠病'))
 
 
+
+
+
+
+
+
+
+
 all_ranking_list <- data.frame() 
 for(NUM_OF_QUERY in 1:nrow(plantcat_df)){
   
@@ -237,12 +251,10 @@ for(NUM_OF_QUERY in 1:nrow(plantcat_df)){
   rownames(s_clean_query) <- rownames(1:nrow(s_clean_query))
   if( length(which(s_clean_query[,1] %in% stop.word)) == 0 ){
     s_query_fin <- s_clean_query[which(s_clean_query[,1] %in% long.q),]
-    print(s_query_fin)
   }
   else{
     s_query_stop <- s_clean_query[-which(s_clean_query[,1] %in% stop.word),]
     s_query_fin <- s_query_stop[which(s_query_stop[,1] %in% long.q),]
-    print(s_query_fin)
   }
   
   
@@ -251,7 +263,7 @@ for(NUM_OF_QUERY in 1:nrow(plantcat_df)){
   loc.word <- long.q[loc]
   num.long.q <- vector(mode="integer",length=length(long.q))
   for(i in 1:length(loc)){
-    num.long.q[loc[i]] <- as.numeric( s_query_fin[which(s_query_fin[,1] == loc.word[i]),2] ) 
+    num.long.q[loc[i]] <- as.numeric( s_query_fin[which(loc.word[i] == s_query_fin[,1]),2] ) 
   }
   
   
@@ -259,14 +271,32 @@ for(NUM_OF_QUERY in 1:nrow(plantcat_df)){
   query.temp <- as.numeric(s_query_fin[,2])
   k3 <- 2
   query.rev <- ((k3+1)*query.temp) / (k3+query.temp)
-  query.rev <- query.temp
+  doc.vec <- m.rev[which(num.long.q!=0),]
   
   innerproduct <- function(x,y) x %*% y # / sqrt(x%*%x * y%*%y)
-  
-  doc.vec <- m.rev[which(num.long.q!=0),]
+
   cos_list <- apply(doc.vec[,],2,innerproduct,y = as.numeric(query.rev))
   rank <- order(cos_list, decreasing = TRUE)
   print(c("bottleneck end", NUM_OF_QUERY))
+  
+  ### Rocchio feedback (performance not good)
+  # top_hundred <- apply(m.rev[,rank[1:100]],1,sum)
+  # new_para_loc <- which(top_hundred!=0)
+  # new_para <- long.q[new_para_loc]
+  # new_para_val <- apply(m.rev[new_para_loc,rank[1:100]], 1, mean)
+  # 
+  # ori.query <- vector(mode="integer",length=length(new_para_loc))
+  # for(i in 1:length(s_query_fin[,1])){
+  #   search_loc <- which(new_para ==s_query_fin[i,1])
+  #   if(length(search_loc)!=0){
+  #     ori.query[search_loc] <- new_para_val[search_loc]
+  #   }
+  # }
+  # 
+  # new.query <- ori.query + 0.8*new_para_val
+  # 
+  # query.rev <- new.query
+  # doc.vec <- m.rev[new_para_loc,]
   
   
   ### Output Ranking Ans
@@ -276,6 +306,7 @@ for(NUM_OF_QUERY in 1:nrow(plantcat_df)){
   ans.out <- cbind(rep(topic.num,length(rank.answer)),rank.answer)
   
   all_ranking_list <- rbind(all_ranking_list,ans.out)
+
 }
 
 write.table(all_ranking_list, file="out/ranking_list.txt", sep = " ", 
