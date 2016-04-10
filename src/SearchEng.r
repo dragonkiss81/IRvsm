@@ -1,60 +1,15 @@
-library("XML")
-library("tm")
-library("tmcn")
-library("irlba")
-library("futile.matrix")
-library("ggplot2")
-library("ngram")
-
-### Read All Require Data
-xmlfile <- xmlTreeParse("test/query-test.xml")
-long_vec <- read.table('out/wordvec.txt')
-vocab.all <- readLines('test/vocab.all')
-vocab.all <- vocab.all[-1]
-stop.word <- readLines('test/stopword.tw')
-m <- read.table('out/rev.txt', sep =",", header = FALSE)
-m.rev <- sparseMatrix(i=m[,1], j=m[,2], x=m[,3]) 
-#if use svd : s <- irlba(m.rev, nv = 100) 
-
-xmltop = xmlRoot(xmlfile) # Read XML
-plantcat <- xmlSApply(xmltop, function(x) xmlSApply(x, xmlValue))
-plantcat_df <- data.frame(t(plantcat),row.names=NULL)
-# summary(plantcat_df)
-
-
-### Generate All Term
-long.q <- vector(mode="character",length=nrow(long_vec))
-for(i in 1:nrow(long_vec)){
-  if(long_vec[i,2]==-1){ long.q[i] <- paste(vocab.all[long_vec[i,1]]) }
-  else{ long.q[i] <- paste( vocab.all[long_vec[i,1]], vocab.all[long_vec[i,2]], sep = "") }
-} # length(long.q)
-
 
 all_ranking_list <- data.frame() 
 for(NUM_OF_QUERY in 1:nrow(plantcat_df)){
 
+### help segment
 str <- as.character(plantcat_df[NUM_OF_QUERY,c(2)]) 
 str2 <- as.character(plantcat_df[NUM_OF_QUERY,c(3)]) 
 str3 <- as.character(plantcat_df[NUM_OF_QUERY,c(5)]) 
 insertWords(segmentCN(str))
 insertWords(segmentCN(str2))
 insertWords(segmentCN(str3))
-### Query extraction
-# insertWords(c('白色', '恐怖', '受难', '行政', '国防', '立法', '匪谍',
-#               '罚锾',
-#               '科省', '柯省', '科索', '柯索', '难民', '马其', '其顿', '土耳', '耳其', '阿尔', '巴尼',
-#               '中美',
-#               '两税', '业升', '抵减', '经济', '财政', '经建', '行政',
-#               '护盘', '公积', '资本', '证期', '董监', '央行', '增值', '印花', '证交',
-#               '麦可', '乔丹', '乔登', '代言', '耐吉', '史腾', '博德',
-#               '晓燕', '白案', '掳人', '勒赎', '合议', '进兴', '志辉', '素真',
-#               '儿扶',
-#               '迪士', '士尼',
-#               '策进', '招策', '教育',
-#               '培训', '国小', '教学', '检核',
-#               '美浓',
-#               '栖兰', '桧木', '枯立', '倒木', '退辅', '农委', '森保', '林务',
-#               '黑面', '琵鹭', '曾文', '圣婴', '猩红', '登革', '革热', '肠病'))
+
 d.corpus <- Corpus(VectorSource(plantcat_df[NUM_OF_QUERY,c(5)]))
 d.corpus <- tm_map(d.corpus, removePunctuation)
 d.corpus <- tm_map(d.corpus, removeNumbers)
@@ -66,12 +21,10 @@ s_clean_query <- cbind(rownames(temp),rowSums(temp))
 rownames(s_clean_query) <- rownames(1:nrow(s_clean_query))
 if( length(which(s_clean_query[,1] %in% stop.word)) == 0 ){
   s_query_fin <- s_clean_query[which(s_clean_query[,1] %in% long.q),]
-  print(s_query_fin)
 }
 else{
   s_query_stop <- s_clean_query[-which(s_clean_query[,1] %in% stop.word),]
   s_query_fin <- s_query_stop[which(s_query_stop[,1] %in% long.q),]
-  print(s_query_fin)
 }
 
 
@@ -86,8 +39,8 @@ for(i in 1:length(loc)){
 
 ### Ranking : BM25
 query.temp <- as.numeric(s_query_fin[,2])
-# k3 <- 2
-# query.rev <- ((k3+1)*query.temp) / (k3+query.temp)
+k3 <- 2
+query.rev <- ((k3+1)*query.temp) / (k3+query.temp)
 query.rev <- query.temp
 
 innerproduct <- function(x,y) x %*% y # / sqrt(x%*%x * y%*%y)
@@ -109,6 +62,7 @@ all_ranking_list <- rbind(all_ranking_list,ans.out)
 
 write.table(all_ranking_list, file="out/ranking_list.txt", sep = " ", 
             row.names = FALSE, col.names = FALSE, quote = FALSE)
+
 
 ### Compare to answer
 # ans.train <- read.table("test/ans-train")
